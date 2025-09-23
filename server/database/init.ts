@@ -1,10 +1,42 @@
-import sqlite3 from 'sqlite3';
-import { promisify } from 'util';
+import Database from 'better-sqlite3';
 
-const db = new sqlite3.Database('./cowatch.db');
-const dbRun = promisify(db.run.bind(db));
-const dbGet = promisify(db.get.bind(db));
-const dbAll = promisify(db.all.bind(db));
+const db = new Database('./cowatch.db');
+
+const dbRun = (sql: string, params: any[] = []) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const stmt = db.prepare(sql);
+      const result = stmt.run(...params);
+      resolve(result);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const dbGet = (sql: string, params: any[] = []) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const stmt = db.prepare(sql);
+      const result = stmt.get(...params);
+      resolve(result);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const dbAll = (sql: string, params: any[] = []) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const stmt = db.prepare(sql);
+      const result = stmt.all(...params);
+      resolve(result);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 export const initializeDatabase = async () => {
   try {
