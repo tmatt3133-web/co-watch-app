@@ -1,40 +1,40 @@
-import Database from 'better-sqlite3';
+import sqlite3 from 'sqlite3';
 
-const db = new Database('./cowatch.db');
+const db = new sqlite3.Database('./cowatch.db');
 
 const dbRun = (sql: string, params: any[] = []) => {
   return new Promise((resolve, reject) => {
-    try {
-      const stmt = db.prepare(sql);
-      const result = stmt.run(...params);
-      resolve(result);
-    } catch (error) {
-      reject(error);
-    }
+    db.run(sql, params, function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ lastID: this.lastID, changes: this.changes });
+      }
+    });
   });
 };
 
 const dbGet = (sql: string, params: any[] = []) => {
   return new Promise((resolve, reject) => {
-    try {
-      const stmt = db.prepare(sql);
-      const result = stmt.get(...params);
-      resolve(result);
-    } catch (error) {
-      reject(error);
-    }
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
   });
 };
 
 const dbAll = (sql: string, params: any[] = []) => {
   return new Promise((resolve, reject) => {
-    try {
-      const stmt = db.prepare(sql);
-      const result = stmt.all(...params);
-      resolve(result);
-    } catch (error) {
-      reject(error);
-    }
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
   });
 };
 
